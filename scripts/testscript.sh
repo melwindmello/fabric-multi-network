@@ -31,8 +31,8 @@ echo "Sending invoke transaction on peer0.org1 peer0.org2..."
 chaincodeInvoke 0 1
 
 # Query on chaincode on peer1.org2, check if the result is 90
-echo "Querying chaincode on peer1.org2..."
-chaincodeQuery 1 2 80
+echo "Querying chaincode on peer0.org1..."
+chaincodeQuery 0 1 80
 
 echo
 

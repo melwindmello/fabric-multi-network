@@ -104,6 +104,10 @@ installChaincode 1 1
 echo "Installing chaincode on peer1.org2..."
 installChaincode 1 2
 
+# Query on chaincode on peer1.org1, check if the result is 90
+echo "Querying chaincode on peer1.org1..."
+chaincodeQuery 1 1 90
+
 # Query on chaincode on peer1.org2, check if the result is 90
 echo "Querying chaincode on peer1.org2..."
 chaincodeQuery 1 2 90
