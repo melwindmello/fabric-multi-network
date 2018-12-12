@@ -36,14 +36,10 @@ services:
             replicas: 1
             restart_policy:
               condition: on-failure
-            placement:
-                constraints:
-                    - node.hostname == $ORG2_HOSTNAME
 
     ports:
      - published: 8054
        target: 7054
-       mode: host
     networks:
       bymn:
         aliases:
@@ -89,17 +85,12 @@ services:
             replicas: 1
             restart_policy:
               condition: on-failure
-            placement:
-                constraints:
-                    - node.hostname == $ORG2_HOSTNAME
 
     ports:
             - published: 9051
               target: 7051
-              mode: host
             - published: 9053
               target: 7053
-              mode: host
     networks:
       bymn:
         aliases:
@@ -145,17 +136,12 @@ services:
             replicas: 1
             restart_policy:
               condition: on-failure
-            placement:
-                constraints:
-                    - node.hostname == $ORG2_HOSTNAME
 
     ports:
             - published: 10051
               target: 7051
-              mode: host
             - published: 10053
               target: 7053
-              mode: host
     networks:
       bymn:
         aliases:

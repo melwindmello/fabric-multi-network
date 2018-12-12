@@ -46,14 +46,10 @@ services:
             replicas: 1
             restart_policy:
               condition: on-failure
-            placement:
-                constraints:
-                    - node.hostname == $ORDERER_HOSTNAME 
 
     ports:
       - published: 7050
         target: 7050
-        mode: host
     networks:
       bymn:
         aliases:
