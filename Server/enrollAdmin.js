@@ -23,11 +23,14 @@ var member_user = null;
 var store_path = path.join(__dirname, 'hfc-key-store');
 console.log(' Store path:' + store_path);
 
-var ca_url = 'https://35.247.43.4:7054'; //GCP poc1 url, testing docker swarm
+//----------------------------------------------------------
+//to be passed as variables:
+var ca_url = 'http://35.247.43.4:7054'; //GCP poc1 url, testing docker swarm
 var ca_name = 'ca.org1.example.com';
-var admin_user_id = 'admin1';
+var admin_user_id = 'admin';
 var admin_user_pwd = 'adminpw';
 var org_msp_id = 'Org1MSP';
+//----------------------------------------------------------
 
 // create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
 Fabric_Client.newDefaultKeyValueStore({

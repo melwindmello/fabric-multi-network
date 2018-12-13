@@ -16,9 +16,23 @@ var os = require('os');
 //
 var fabric_client = new Fabric_Client();
 
+//----------------------------------------------------------
+//to be passed as variables:
+var channelName = 'mychannel';
+//var peer_url = 'grpc://35.247.43.4:7051'; //org1
+var peer_url = 'grpc://35.185.92.173:9051'; //org2
+
+var user_id = 'user1-org1';
+
+var chaincodeIdentifier = 'mycc';
+var functionName = 'query';
+var argumentsArray = ['b'];
+
+//----------------------------------------------------------
+
 // setup the fabric network
-var channel = fabric_client.newChannel('mychannel');
-var peer = fabric_client.newPeer('grpc://localhost:7051');
+var channel = fabric_client.newChannel(channelName);
+var peer = fabric_client.newPeer(peer_url); 
 channel.addPeer(peer);
 
 //
@@ -40,7 +54,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	fabric_client.setCryptoSuite(crypto_suite);
 
 	// get the enrolled user from persistence, this user will sign all requests
-	return fabric_client.getUserContext('user1', true);
+	return fabric_client.getUserContext(user_id, true);
 }).then((user_from_store) => {
 	if (user_from_store && user_from_store.isEnrolled()) {
 		console.log('Successfully loaded user1 from persistence');
@@ -53,9 +67,9 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	// queryAllCars chaincode function - requires no arguments , ex: args: [''],
 	const request = {
 		//targets : --- letting this default to the peers assigned to the channel
-		chaincodeId: 'fabcar',
-		fcn: 'queryAllCars',
-		args: ['']
+		chaincodeId: chaincodeIdentifier,
+		fcn: functionName,
+		args: argumentsArray
 	};
 
 	// send the query proposal to the peer
