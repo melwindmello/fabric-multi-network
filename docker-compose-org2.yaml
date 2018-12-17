@@ -19,6 +19,7 @@ networks:
 services:
   ca2:
     image: hyperledger/fabric-ca:$IMAGE_TAG
+    hostname: ca.org2.example.com
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.org2.example.com
@@ -51,6 +52,7 @@ services:
 
   org2peer0:
     container_name: org2peer0
+    hostname: peer0.org2.example.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
@@ -107,6 +109,7 @@ services:
 
   org2peer1:
     container_name: org2peer1
+    hostname: peer1.org2.example.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock

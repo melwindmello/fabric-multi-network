@@ -21,6 +21,7 @@ networks:
 services:
   orderer:
     container_name: orderer
+    hostname: orderer.example.com
     image: hyperledger/fabric-orderer:$IMAGE_TAG
     environment:
       - ORDERER_GENERAL_LOGLEVEL=DEBUG
