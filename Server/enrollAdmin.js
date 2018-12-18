@@ -27,7 +27,7 @@ console.log(' Store path:' + store_path);
 //to be passed as variables:
 var ca_url = 'http://35.247.43.4:7054'; //GCP poc1 url, testing docker swarm
 var ca_name = 'ca.org1.example.com';
-var admin_user_id = 'admin';
+var admin_user_id = 'admin1-org1';
 var admin_user_pwd = 'adminpw';
 var org_msp_id = 'Org1MSP';
 //----------------------------------------------------------

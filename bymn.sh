@@ -33,7 +33,8 @@ export FABRIC_CFG_PATH=${PWD}
 export VERBOSE=false
 export ORDERER_HOSTNAME="poc1"
 export ORG1_HOSTNAME="poc2"
-export ORG2_HOSTNAME="poc3"
+#export ORG2_HOSTNAME="poc3"
+export ORG2_HOSTNAME="blockchainPOC4-Ubuntu"
 export SWARM_NETWORK="fabric"
 export DOCKER_STACK="fabric"
 
