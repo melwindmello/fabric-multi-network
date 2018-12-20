@@ -3,7 +3,7 @@
 For documentation , follow this link [Hyperledger Fabric on Multiple Hosts using Docker Swarm and Compose](https://medium.com/@malliksarvepalli/hyperledger-fabric-on-multiple-hosts-using-docker-swarm-and-compose-f4b70c64fa7d)
 
 
-Tried this setup with following VMs:
+Tried the setup from branch 1.2 with following VMs:
 Orderer on GCP
 Org1 on GCP
 Org2 on DigitalOcean
