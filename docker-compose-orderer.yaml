@@ -11,7 +11,8 @@
 version: '3.4'
 
 volumes:
-  orderer.example.com:
+  orderer0.example.com:
+  orderer1.example.com:
   
 networks:
   bymn:
@@ -19,9 +20,9 @@ networks:
       name: $SWARM_NETWORK
 
 services:
-  orderer:
-    container_name: orderer
-    hostname: orderer.example.com
+  orderer0:
+    container_name: orderer0
+    hostname: orderer0.example.com
     image: hyperledger/fabric-orderer:$IMAGE_TAG
     environment:
       - ORDERER_GENERAL_LOGLEVEL=DEBUG
@@ -35,13 +36,17 @@ services:
       - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
       - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      # kafka
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: orderer
     volumes:
     - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
-    - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
-    - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
-    - orderer.example.com:/var/hyperledger/production/orderer
+    - ./crypto-config/ordererOrganizations/example.com/orderers/orderer0.example.com/msp:/var/hyperledger/orderer/msp
+    - ./crypto-config/ordererOrganizations/example.com/orderers/orderer0.example.com/tls/:/var/hyperledger/orderer/tls
+    - orderer0.example.com:/var/hyperledger/production/orderer
     deploy:
             mode: replicated
             replicas: 1
@@ -50,12 +55,306 @@ services:
             placement:
                 constraints:
                     - node.hostname == $ORDERER_HOSTNAME 
-
     ports:
       - published: 7050
         target: 7050
         mode: host
+    depends_on:
+      - kafka0.example.com
+      - kafka1.example.com
+      - kafka2.example.com
+      - kafka3.example.com
     networks:
       bymn:
         aliases:
-          - orderer.example.com
+          - orderer0.example.com
+
+  orderer1:
+    container_name: orderer1
+    hostname: orderer1.example.com
+    image: hyperledger/fabric-orderer:$IMAGE_TAG
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=DEBUG
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      # - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      # kafka
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+    - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    - ./crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp:/var/hyperledger/orderer/msp
+    - ./crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/:/var/hyperledger/orderer/tls
+    - orderer1.example.com:/var/hyperledger/production/orderer
+    deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+            placement:
+                constraints:
+                    - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 8050
+        target: 7050
+        mode: host
+    depends_on:
+      - kafka0.example.com
+      - kafka1.example.com
+      - kafka2.example.com
+      - kafka3.example.com
+    networks:
+      bymn:
+        aliases:
+          - orderer1.example.com
+
+  zookeeper0:
+    container_name: zookeeper0.example.com
+    hostname: zookeeper0.example.com
+    image: hyperledger/fabric-zookeeper
+    environment:
+      - ZOO_SERVERS=server.1=zookeeper0.example.com:2888:3888 server.2=zookeeper1.example.com:2888:3888 server.3=zookeeper2.example.com:2888:3888
+      - ZOO_MY_ID=1
+    restart: always
+    deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+            placement:
+                constraints:
+                    - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 2181
+        target: 2181
+        mode: host
+      - published: 2888
+        target: 2888
+        mode: host
+      - published: 3888
+        target: 3888
+        mode: host
+    networks:
+      bymn:
+        aliases:
+          - zookeeper0.example.com
+
+  zookeeper1:
+    container_name: zookeeper1.example.com
+    hostname: zookeeper1.example.com
+    image: hyperledger/fabric-zookeeper
+    environment:
+      - ZOO_SERVERS=server.1=zookeeper0.example.com:2888:3888 server.2=zookeeper1.example.com:2888:3888 server.3=zookeeper2.example.com:2888:3888
+      - ZOO_MY_ID=2
+    restart: always
+    deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+            placement:
+                constraints:
+                    - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 12181
+        target: 2181
+        mode: host
+      - published: 12888
+        target: 2888
+        mode: host
+      - published: 13888
+        target: 3888
+        mode: host
+    networks:
+      bymn:
+        aliases:
+          - zookeeper1.example.com
+
+  zookeeper2:
+    container_name: zookeeper2.example.com
+    hostname: zookeeper2.example.com
+    image: hyperledger/fabric-zookeeper
+    environment:
+      - ZOO_SERVERS=server.1=zookeeper0.example.com:2888:3888 server.2=zookeeper1.example.com:2888:3888 server.3=zookeeper2.example.com:2888:3888
+      - ZOO_MY_ID=3
+    restart: always
+    deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+            placement:
+                constraints:
+                    - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 22181
+        target: 2181
+        mode: host
+      - published: 22888
+        target: 2888
+        mode: host
+      - published: 23888
+        target: 3888
+        mode: host
+    networks:
+      bymn:
+        aliases:
+          - zookeeper2.example.com
+
+  kafka0:
+    container_name: kafka0.example.com
+    hostname: kafka0.example.com
+    image: hyperledger/fabric-kafka
+    environment:
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0.example.com:2181,zookeeper1.example.com:2181,zookeeper2.example.com:2181
+      - KAFKA_BROKER_ID=0
+    restart: always
+    depends_on:
+      - zookeeper0.example.com
+      - zookeeper1.example.com
+      - zookeeper2.example.com
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+          constraints:
+              - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 9092
+        target: 9092
+        mode: host
+      - published: 9093
+        target: 9093
+        mode: host
+    networks:
+      bymn:
+        aliases:
+          - kafka0.example.com
+
+  kafka1:
+    container_name: kafka1.example.com
+    hostname: kafka1.example.com
+    image: hyperledger/fabric-kafka
+    environment:
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0.example.com:2181,zookeeper1.example.com:2181,zookeeper2.example.com:2181
+      - KAFKA_BROKER_ID=1
+    restart: always
+    depends_on:
+      - zookeeper0.example.com
+      - zookeeper1.example.com
+      - zookeeper2.example.com
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+          constraints:
+              - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 10092
+        target: 9092
+        mode: host
+      - published: 10093
+        target: 9093
+        mode: host
+    networks:
+      bymn:
+        aliases:
+          - kafka1.example.com
+
+  kafka2:
+    container_name: kafka2.example.com
+    hostname: kafka2.example.com
+    image: hyperledger/fabric-kafka
+    environment:
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0.example.com:2181,zookeeper1.example.com:2181,zookeeper2.example.com:2181
+      - KAFKA_BROKER_ID=2
+    restart: always
+    depends_on:
+      - zookeeper0.example.com
+      - zookeeper1.example.com
+      - zookeeper2.example.com
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+          constraints:
+              - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 11092
+        target: 9092
+        mode: host
+      - published: 11093
+        target: 9093
+        mode: host
+    networks:
+      bymn:
+        aliases:
+          - kafka2.example.com
+
+  kafka3:
+    container_name: kafka3.example.com
+    hostname: kafka3.example.com
+    image: hyperledger/fabric-kafka
+    environment:
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0.example.com:2181,zookeeper1.example.com:2181,zookeeper2.example.com:2181
+      - KAFKA_BROKER_ID=3
+    restart: always
+    depends_on:
+      - zookeeper0.example.com
+      - zookeeper1.example.com
+      - zookeeper2.example.com
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+          constraints:
+              - node.hostname == $ORDERER_HOSTNAME 
+    ports:
+      - published: 12092
+        target: 9092
+        mode: host
+      - published: 12093
+        target: 9093
+        mode: host
+    networks:
+      bymn:
+        aliases:
+          - kafka3.example.com
