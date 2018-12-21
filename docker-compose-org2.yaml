@@ -19,10 +19,11 @@ networks:
 services:
   ca2:
     image: hyperledger/fabric-ca:$IMAGE_TAG
+    hostname: ca.org2.example.com
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.org2.example.com
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      #- FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem
       - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/310b3100d1449654d05b799955f521e2cca5f80fbd41cea41d04afc87f34f1ec_sk
@@ -41,7 +42,7 @@ services:
                     - node.hostname == $ORG2_HOSTNAME
 
     ports:
-     - published: 7054
+     - published: 8054
        target: 7054
        mode: host
     networks:
@@ -51,6 +52,7 @@ services:
 
   org2peer0:
     container_name: org2peer0
+    hostname: peer0.org2.example.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
@@ -61,7 +63,7 @@ services:
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       #- CORE_LOGGING_LEVEL=INFO
       - CORE_LOGGING_LEVEL=DEBUG
-      - CORE_PEER_TLS_ENABLED=true
+      #- CORE_PEER_TLS_ENABLED=true
       - CORE_PEER_GOSSIP_USELEADERELECTION=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
       - CORE_PEER_PROFILE_ENABLED=true
@@ -94,10 +96,10 @@ services:
                     - node.hostname == $ORG2_HOSTNAME
 
     ports:
-            - published: 7051
+            - published: 9051
               target: 7051
               mode: host
-            - published: 7053
+            - published: 9053
               target: 7053
               mode: host
     networks:
@@ -107,6 +109,7 @@ services:
 
   org2peer1:
     container_name: org2peer1
+    hostname: peer1.org2.example.com
     image: hyperledger/fabric-peer:$IMAGE_TAG
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
@@ -117,7 +120,7 @@ services:
       #- CORE_LOGGING_LEVEL=INFO
       - CORE_LOGGING_LEVEL=DEBUG
       - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-      - CORE_PEER_TLS_ENABLED=true
+      #- CORE_PEER_TLS_ENABLED=true
       - CORE_PEER_GOSSIP_USELEADERELECTION=true
       - CORE_PEER_GOSSIP_ORGLEADER=false
       - CORE_PEER_PROFILE_ENABLED=true
@@ -150,10 +153,10 @@ services:
                     - node.hostname == $ORG2_HOSTNAME
 
     ports:
-            - published: 8051
+            - published: 10051
               target: 7051
               mode: host
-            - published: 8053
+            - published: 10053
               target: 7053
               mode: host
     networks:
@@ -184,7 +187,7 @@ services:
       - CORE_PEER_ID=cli
       - CORE_PEER_ADDRESS=peer0.org2.example.com:7051
       - CORE_PEER_LOCALMSPID=Org2MSP
-      - CORE_PEER_TLS_ENABLED=true
+      #- CORE_PEER_TLS_ENABLED=true
       - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
